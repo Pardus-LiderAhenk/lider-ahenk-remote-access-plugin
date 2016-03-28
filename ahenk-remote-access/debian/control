@@ -1,0 +1,14 @@
+Source: remote-access
+Section: unknown
+Priority: optional
+Maintainer: TUBITAK ULAKBIM
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.5
+Homepage: http://www.liderahenk.org.tr
+
+Package: remote-access
+Version: 1.0.0
+Architecture: any
+Depends: python3 (>= 3)
+Description: LiderAhenk ahenk-remote-access application
+ Long Desc
