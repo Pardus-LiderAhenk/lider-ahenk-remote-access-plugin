@@ -1,4 +1,4 @@
-package tr.org.liderahenk.remote.access.dialogs;
+package tr.org.liderahenk.remote.access.listeners;
 
 import com.glavsoft.rfb.protocol.ProtocolSettings;
 import com.glavsoft.viewer.ConnectionPresenter;
@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 
 public class RemoteAccessConnection implements Runnable, WindowListener {
 
+	private static final Logger logger = LoggerFactory.getLogger(RemoteAccessConnection.class);
+
 	private int paramsMask;
 	private final ConnectionParams connectionParams;
 	private static String[] serverParameters;
@@ -29,8 +31,6 @@ public class RemoteAccessConnection implements Runnable, WindowListener {
 	private final ProtocolSettings settings;
 	private final UiSettings uiSettings;
 	private ConnectionPresenter connectionPresenter;
-	
-	private static final Logger logger = LoggerFactory.getLogger(RemoteAccessConnection.class);
 
 	public RemoteAccessConnection() {
 		connectionParams = new ConnectionParams();
@@ -44,9 +44,9 @@ public class RemoteAccessConnection implements Runnable, WindowListener {
 	}
 
 	public static void invoke(String hostName, String portNumber, String password) {
-		
-		serverParameters = new String[]{hostName, portNumber, password};
-		
+
+		serverParameters = new String[] { hostName, portNumber, password };
+
 		Parser parser = new Parser();
 		ParametersHandler.completeParserOptions(parser);
 
@@ -55,7 +55,6 @@ public class RemoteAccessConnection implements Runnable, WindowListener {
 	}
 
 	private boolean checkJsch() {
-		
 		try {
 			Class.forName("com.jcraft.jsch.JSch");
 			return true;
@@ -66,7 +65,7 @@ public class RemoteAccessConnection implements Runnable, WindowListener {
 
 	@Override
 	public void run() {
-		
+
 		connectionParams.setHostName(serverParameters[0]);
 		try {
 			connectionParams.setPortNumber(serverParameters[1]);
@@ -77,21 +76,23 @@ public class RemoteAccessConnection implements Runnable, WindowListener {
 		connectionPresenter = new ConnectionPresenter(hasJsch, true);
 		connectionPresenter.addModel("ConnectionParamsModel", connectionParams);
 
-		final ConnectionView connectionView = new ConnectionView(RemoteAccessConnection.this, connectionPresenter, false);
+		final ConnectionView connectionView = new ConnectionView(RemoteAccessConnection.this, connectionPresenter,
+				false);
 
 		connectionPresenter.addView(ConnectionPresenter.CONNECTION_VIEW, connectionView);
 		connectionView.closeView();
-		
-		SwingViewerWindowFactory viewerWindowFactory = new SwingViewerWindowFactory(isSeparateFrame, true, new Viewer());
 
-		connectionPresenter.setConnectionWorkerFactory(new SwingConnectionWorkerFactory(null,
-				serverParameters[2], connectionPresenter, viewerWindowFactory));
+		SwingViewerWindowFactory viewerWindowFactory = new SwingViewerWindowFactory(isSeparateFrame, true,
+				new Viewer());
+
+		connectionPresenter.setConnectionWorkerFactory(
+				new SwingConnectionWorkerFactory(null, serverParameters[2], connectionPresenter, viewerWindowFactory));
 
 		connectionPresenter.startConnection(settings, uiSettings, paramsMask);
 
 		try {
 			connectionPresenter.submitConnection(serverParameters[0]);
-			if(connectionPresenter.needReconnection())
+			if (connectionPresenter.needReconnection())
 				connectionView.closeView();
 		} catch (WrongParameterException e) {
 			logger.error(e.toString(), e);

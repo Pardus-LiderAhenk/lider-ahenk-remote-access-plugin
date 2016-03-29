@@ -58,7 +58,7 @@
 					<scanIntervalSeconds>10</scanIntervalSeconds>
 					<webAppSourceDirectory>${basedir}/target/repository/</webAppSourceDirectory>
 					<webApp>
-						<contextPath>/site</contextPath>
+						<contextPath>/site-remote-access</contextPath>
 					</webApp>
 				</configuration>
 			</plugin>

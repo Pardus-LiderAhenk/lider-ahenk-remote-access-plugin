@@ -3,12 +3,10 @@
 
   <!-- ICommand implementation is used to process a task execution -->
   <service 
-      ref="${command}"
+      ref="setupVNCServerCommand"
       interface="tr.org.liderahenk.lider.core.api.plugin.ICommand" />
-  <bean id="${command}" 
-        class="tr.org.liderahenk.remote.access.commands.${command}">
-        <property name="pluginDbService" ref="pluginDbService"/>
-        <property name="logService" ref="logService"/>
+  <bean id="setupVNCServerCommand" 
+        class="tr.org.liderahenk.remote.access.commands.SetupVNCServerCommand">
         <property name="resultFactory" ref="resultFactory"/>
   </bean>
   

@@ -27,6 +27,6 @@ Require-Bundle: javax.inject;bundle-version="1.0.0",
  tr.org.liderahenk.liderconsole.core,
  org.codehaus.jackson.core,
  org.codehaus.jackson.mapper,
- com.glavsoft.tightvncjviewer
+ com.glavsoft.tightvncjviewer;bundle-version="2.7.2"
 Bundle-Vendor: Agem Bilişim
 Bundle-Name: Lider Ahenk RemoteAccess Plugin
