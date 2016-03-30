@@ -49,7 +49,6 @@
  				<command
                   commandId="tr.org.liderahenk.liderconsole.commands.RemoteAccessTask"
                   id="tr.org.liderahenk.liderconsole.commands.RemoteAccessTask"
-                  icon="icons/sample.png"
                   tooltip="%command.profile">
                   <!-- TODO Uncomment this after updating/fixing LiderSourceProvider -->
 				  <!-- <visibleWhen>
