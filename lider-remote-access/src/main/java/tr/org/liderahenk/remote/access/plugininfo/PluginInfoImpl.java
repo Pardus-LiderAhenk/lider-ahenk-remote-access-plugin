@@ -6,7 +6,7 @@ public class PluginInfoImpl implements IPluginInfo {
 	
 	@Override
 	public String getPluginName() {
-		return "lider-remote-access";
+		return "remote-access";
 	}
 
 	@Override
@@ -31,6 +31,11 @@ public class PluginInfoImpl implements IPluginInfo {
 
 	@Override
 	public boolean isPolicyPlugin() {
+		return false;
+	}
+
+	@Override
+	public boolean isxBased() {
 		return false;
 	}
 	

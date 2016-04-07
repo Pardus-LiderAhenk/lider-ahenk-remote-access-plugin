@@ -42,7 +42,6 @@
   
   <extension
          point="org.eclipse.ui.menus">
-	 <!-- Add menu command for profile definition dialog -->
      <menuContribution
       		allPopups="false"
             locationURI="popup:tr.org.liderahenk.liderconsole.menus.ApplyTask?after=additions">
