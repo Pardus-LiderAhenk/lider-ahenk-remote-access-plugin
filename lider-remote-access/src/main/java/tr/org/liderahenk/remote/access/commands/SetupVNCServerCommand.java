@@ -7,14 +7,18 @@ import tr.org.liderahenk.lider.core.api.service.ICommandResult;
 import tr.org.liderahenk.lider.core.api.service.ICommandResultFactory;
 import tr.org.liderahenk.lider.core.api.service.enums.CommandResultStatus;
 
+/**
+ * 
+ * @author <a href="mailto:emre.akkaya@agem.com.tr">Emre Akkaya</a>
+ *
+ */
 public class SetupVNCServerCommand extends BaseCommand {
 
 	private ICommandResultFactory resultFactory;
 
 	@Override
 	public ICommandResult execute(ICommandContext context) {
-		ICommandResult commandResult = resultFactory.create(CommandResultStatus.OK, new ArrayList<String>(), this);
-		return commandResult;
+		return resultFactory.create(CommandResultStatus.OK, new ArrayList<String>(), this);
 	}
 
 	@Override

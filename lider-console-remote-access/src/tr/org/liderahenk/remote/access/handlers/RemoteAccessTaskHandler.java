@@ -54,7 +54,7 @@ public class RemoteAccessTaskHandler extends SingleSelectionHandler {
 			// DO NOT connect to VNC here! First send this task to let
 			// agent to install/configure VNC server.
 			// (VNC connection is handled inside EventHandler class
-			// above!)
+			// below!)
 			TaskUtils.execute(request);
 		} catch (Exception e1) {
 			logger.error(e1.getMessage(), e1);
@@ -76,15 +76,31 @@ public class RemoteAccessTaskHandler extends SingleSelectionHandler {
 
 						String body = (String) event.getProperty("org.eclipse.e4.data");
 						TaskStatus taskStatus = new ObjectMapper().readValue(body, TaskStatus.class);
-
-						// Connect VNC via {host,port,password} provided from
-						// agent itself.
 						Map<String, Object> responseData = taskStatus.getResponseData();
-						RemoteAccessConnection.invoke((String) responseData.get("host"),
-								(String) responseData.get("port"), (String) responseData.get("password"));
+
+						// Host may have contain multiple IP addresses
+						String[] ipAddresses = ((String) responseData.get("host")).split(",");
+						for (int i = 0; i < ipAddresses.length; i++) {
+							String ipAddress = ipAddresses[i];
+							try {
+								// Try to connect VNC via
+								// {ipAddress,port,password}
+								// provided from agent itself.
+								RemoteAccessConnection.invoke(ipAddress, (String) responseData.get("port"),
+										(String) responseData.get("password"));
+							} catch (Exception e) {
+								logger.error(e.getMessage(), e);
+								if (i == ipAddresses.length - 1) {
+									Notifier.error("", Messages.getString("COULD_NOT_CONNECT_VNC"));
+								} else {
+									Notifier.error("", Messages.getString("COULD_NOT_CONNECT_VNC_TRY_ANOTHER"));
+								}
+							}
+						}
 
 					} catch (Exception e) {
 						logger.error(e.getMessage(), e);
+						Notifier.error("", Messages.getString("UNEXPECTED_ERROR_CONNECTING_VNC"));
 					}
 
 					monitor.worked(100);
