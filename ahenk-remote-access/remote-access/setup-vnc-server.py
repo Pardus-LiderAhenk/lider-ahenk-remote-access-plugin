@@ -3,9 +3,8 @@
 # Author:Mine DOGAN <mine.dogan@agem.com.tr>
 # Author: Volkan Şahin <volkansah.in> <bm.volkansahin@gmail.com>
 
-import threading
-from base64 import b64encode
 import os
+from base64 import b64encode
 from os import urandom
 
 from base.model.ContentType import ContentType
@@ -21,62 +20,39 @@ class SetupVnc(AbstractCommand):
         super(SetupVnc, self).__init__()
         self.task = task
         self.context = context
-
         self.password = self.create_password(10)
-        self.port_number = self.get_port_number()
-
-        self.install_x11vnc = 'apt-get -y install x11vnc'
-        self.kill_awake_vnc_processes = 'ps aux | grep x11vnc | grep "port %s" | awk \'{print $2}\' | xargs kill -9' % self.port_number
-        self.create_vnc_conf = 'mkdir -p /tmp/.vncahenk'
-        self.set_password = 'x11vnc -storepasswd "%s" /tmp/.vncahenk/x11vncpasswd' % self.password
-        self.run_vnc = '/usr/bin/x11vnc -rfbport %s -rfbauth /tmp/.vncahenk/x11vncpasswd -o /tmp/.vncahenk/vnc.log -display :0 &' % self.port_number
+        self.context.debug('[SetupVnc] Initialized')
 
     def handle_task(self):
-        process = self.context.execute(self.install_x11vnc)
-        process.wait()
-
-        process = self.context.execute(self.kill_awake_vnc_processes)
-        process.wait()
-
-        process = self.context.execute(self.create_vnc_conf)
-        process.wait()
-
-        process = self.context.execute(self.set_password)
-        process.wait()
-
-        execute_thread = threading.Thread(target=self.run_vnc_server())
-        execute_thread.start()
-
-        self.get_ip_address()
-
-        data = {'port': self.port_number, 'password': self.password, 'host': self.get_ip_address()}
-        self.create_response(message='_message', data=data)
-
-        """
-        start = time.time();
-        TIMEOUT = 30
-        while 1:
-            if (time.time() - start) > TIMEOUT:
-                process = subprocess.Popen(['ps aux | grep x11vnc | grep "port 5999" | awk \'{print $2}\' | xargs kill -9'], shell=True)
-                process.wait()
-                break
-            time.sleep(10)
-        """
+        self.context.debug('[SetupVnc] Handling task')
+        self.run_vnc_server()
+        self.context.debug('[SetupVnc] VNC Server running')
+        data = {'port': '5999', 'password': self.password, 'host': self.get_ip_address()}
+        self.context.debug('[SetupVnc] Response data created')
+        self.create_response(message='default message', data=data)
+        self.context.debug('[SetupVnc] Response was created')
 
     def get_ip_address(self):
         f = os.popen('ifconfig eth0 | grep "inet\ addr" | cut -d: -f2 | cut -d" " -f1')
-        return f.read()
+        a = f.read()
+        b = a.replace('\n', '')
+        self.context.debug('[SetupVnc] IP address was got')
+        return b
 
     def run_vnc_server(self):
-        process = self.context.execute(self.run_vnc)
+        command = '/bin/bash '+self.context.get_path()+'remote-access/scripts/remote_desktop.sh ' + self.password
+        self.context.debug('[SetupVnc] VNC runner command running: {}'.format(command))
+        process = self.context.execute(command)
         process.wait()
 
     def create_password(self, range):
+        self.context.debug('[SetupVnc] Password created')
         random_bytes = urandom(range)
         return b64encode(random_bytes).decode('utf-8')
 
     def get_port_number(self):
         # TODO define port number dynamically
+        self.context.debug('[SetupVnc] Target port is 5999')
         return '5999'
 
     def create_response(self, message=None, data=None):
