@@ -1,5 +1,6 @@
 package tr.org.liderahenk.remote.access.plugininfo;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,6 +153,7 @@ public class PluginInfoImpl implements IPluginInfo {
 		this.distroPath = distroPath;
 	}
 
+	@JsonIgnore
 	@Override
 	public IPluginDistro getDistro() {
 		return new PluginDistroSSH() {
