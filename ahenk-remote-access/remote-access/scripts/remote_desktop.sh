@@ -15,7 +15,7 @@ fi
 if ! which x11vnc > /dev/null; then
 	apt-get install -y x11vnc
 fi
-w -oush | awk '{print $1, $3}' | while read x; do 
+who | awk '{print $1, $5}' | sed 's/(://' | sed 's/)//' | while read x; do 
 	array=(${x//:/ })
 	if [ $display -eq ${array[1]} ]; then
 		echo "username: ${array[0]} at display $display"
