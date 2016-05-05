@@ -11,13 +11,6 @@
 		update-strategy="reload">
 	</cm:property-placeholder>
 
-	<!-- ICommand implementation is used to process a task execution -->
-	<service ref="setupVNCServerCommand" interface="tr.org.liderahenk.lider.core.api.plugin.ICommand" />
-	<bean id="setupVNCServerCommand"
-		class="tr.org.liderahenk.remote.access.commands.SetupVNCServerCommand">
-		<property name="resultFactory" ref="resultFactory" />
-	</bean>
-
 	<!-- IPluginInfo implementation is used to register plugin -->
 	<service ref="pluginInfoImpl"
 		interface="tr.org.liderahenk.lider.core.api.plugin.IPluginInfo" />
@@ -35,6 +28,14 @@
 		<property name="distroUsername" value="${plugin.distro.username}" />
 		<property name="distroPassword" value="${plugin.distro.password}" />
 		<property name="distroPath" value="${plugin.distro.path}" />
+	</bean>
+
+	<!-- ICommand implementation is used to process a task execution -->
+	<service ref="setupVNCServerCommand" interface="tr.org.liderahenk.lider.core.api.plugin.ICommand" />
+	<bean id="setupVNCServerCommand"
+		class="tr.org.liderahenk.remote.access.commands.SetupVNCServerCommand">
+		<property name="pluginInfo" ref="pluginInfoImpl" />
+		<property name="resultFactory" ref="resultFactory" />
 	</bean>
 
 	<reference id="pluginDbService"
