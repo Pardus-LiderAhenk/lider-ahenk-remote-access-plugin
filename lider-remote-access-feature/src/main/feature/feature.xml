@@ -29,7 +29,8 @@
     </feature>
 
     <feature name="lider-remote-access-bundles" version="${project.version}">
-		<bundle>mvn:tr.org.liderahenk/lider-remote-access/${project.version}</bundle>
+    	<configfile finalname="/etc/tr.org.liderahenk.remote.access.cfg">mvn:${groupId}/lider-remote-access/${project.version}/cfg</configfile>
+		<bundle start-level="90">mvn:tr.org.liderahenk/lider-remote-access/${project.version}</bundle>
     </feature>
 
     <feature name="lider-remote-access-dependencies" version="${project.version}">
