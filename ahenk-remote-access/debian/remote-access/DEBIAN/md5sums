@@ -1,4 +1,0 @@
-8a6fd5eeb1f9012322c579d6378b090b  opt/ahenk/plugins/remote-access/main.py
-d9a197f750a1872c5e1bcb11bfebbe5e  opt/ahenk/plugins/remote-access/scripts/remote_desktop.sh
-1cf6b2fafece28309e7a8c8301aeccf3  opt/ahenk/plugins/remote-access/setup-vnc-server.py
-6ca333c3c10a181ad07e19ad149d8b03  usr/share/doc/remote-access/changelog.gz
