@@ -7,9 +7,8 @@ import os
 from base64 import b64encode
 from os import urandom
 
-from base.model.ContentType import ContentType
-from base.model.MessageCode import MessageCode
-from base.model.MessageType import MessageType
+from base.model.enum.MessageCode import MessageCode
+from base.model.enum.ContentType import ContentType
 from base.plugin.AbstractCommand import AbstractCommand
 
 
@@ -29,7 +28,7 @@ class SetupVnc(AbstractCommand):
         self.context.debug('[SetupVnc] VNC Server running')
         data = {'port': '5999', 'password': self.password, 'host': self.get_ip_address()}
         self.context.debug('[SetupVnc] Response data created')
-        self.create_response(message='default message', data=data)
+        self.context.create_response(code=MessageCode.TASK_PROCESSED.value, message='default message', data=data, content_type=ContentType.APPLICATION_JSON.value)
         self.context.debug('[SetupVnc] Response was created')
 
     def get_ip_address(self):
@@ -54,14 +53,6 @@ class SetupVnc(AbstractCommand):
         # TODO define port number dynamically
         self.context.debug('[SetupVnc] Target port is 5999')
         return '5999'
-
-    def create_response(self, message=None, data=None):
-        self.context.put('taskId', self.task.get_id())
-        self.context.put('type', MessageType.TASK_STATUS.value)
-        self.context.put('responseCode', MessageCode.TASK_PROCESSED.value)
-        self.context.put('responseMessage', message)
-        self.context.put('responseData', data)
-        self.context.put('contentType', ContentType.APPLICATION_JSON.value)
 
 
 def handle_task(task, context):
