@@ -2,7 +2,7 @@
 
 **Lider Ahenk** is an open source project which provides solutions to manage, monitor and audit unlimited number of different systems and users on a network.
 
-Lider Ahenk remote-access plugin. **TODO**
+Lider Ahenk remote-access plugin provides a VNC (Virtual Network Computing) client which allow users to connect to Ahenk-installed machines with desktop sharing capabilities.
 
 This documentation **only** covers plugin related topics. To learn about core projects, please see other lider ahenk projects section.
 
@@ -25,7 +25,7 @@ This documentation **only** covers plugin related topics. To learn about core pr
 
 1. Instead of manually building, just run `build-plugin.sh` under the **scripts/** directory.
 
-> **Warning**: Make sure port 8080 is available before running the script since jetty uses the port by default.
+> **Warning**: Make sure port 8080 is available before running the script since jetty uses this port by default.
 
 ## How to Run?
 
