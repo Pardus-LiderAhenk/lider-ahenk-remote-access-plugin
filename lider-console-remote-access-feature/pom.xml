@@ -13,10 +13,6 @@
   <packaging>eclipse-feature</packaging>
 
 
-	<!-- <properties>
-		<tycho-version>0.25.0</tycho-version>
-	</properties> -->
-
 	<build>
 		<plugins>
 			<plugin>
