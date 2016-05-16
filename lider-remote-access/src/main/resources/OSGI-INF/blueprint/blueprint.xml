@@ -38,10 +38,6 @@
 		<property name="resultFactory" ref="resultFactory" />
 	</bean>
 
-	<reference id="pluginDbService"
-		interface="tr.org.liderahenk.lider.core.api.persistence.IPluginDbService" />
-	<reference id="logService"
-		interface="tr.org.liderahenk.lider.core.api.log.IOperationLogService" />
 	<reference id="resultFactory"
 		interface="tr.org.liderahenk.lider.core.api.service.ICommandResultFactory" />
 </blueprint>
