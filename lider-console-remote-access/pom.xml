@@ -12,8 +12,8 @@
 	<url>http://www.liderahenk.org.tr</url>
 	<packaging>eclipse-plugin</packaging>
 
-	<properties>
-		<!-- needed for checkstyle/findbugs -->
+<!-- 	<properties>
+		needed for checkstyle/findbugs
 		<main.basedir>${project.basedir}/..</main.basedir>
 		<mars.repo.url>http://download.eclipse.org/releases/mars</mars.repo.url>
 		<orbit.repo.url>http://download.eclipse.org/tools/orbit/downloads/drops/R20151118145958/repository</orbit.repo.url>
@@ -54,7 +54,7 @@
 			<url>${p2.maven.plugin.local.repo.url}</url>
 			<layout>p2</layout>
 		</repository>
-	</repositories>
+	</repositories> -->
 
 	<build>
 		<plugins>
