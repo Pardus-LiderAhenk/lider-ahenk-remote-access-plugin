@@ -35,8 +35,8 @@ Plugin project consists of three sub-modules (for **Lider**, **Lider Console** a
 
 > **Prerequisite**: Make sure you have a running Karaf container on which Lider core components installed. See [this documentation](https://github.com/Pardus-Kurumsal/lider/wiki/02.-Building-&-Running) for how to run Lider on Karaf container.
 
-1. Type `feature:repo-add  mvn:${groupId}/lider-${rootArtifactId}-feature/${version}/xml/features` on Karaf shell. This will add plugin repository to the Karaf instance.
-2. Again on Karaf shell, run `feature:install lider-${rootArtifactId}` to install and run plugin bundles.
+1. Type `feature:repo-add  mvn:tr.org.liderahenk/lider-remote-access-feature/1.0.0/xml/features` on Karaf shell. This will add plugin repository to the Karaf instance.
+2. Again on Karaf shell, run `feature:install lider-remote-access` to install and run plugin bundles.
 3. Use `log:tail` and `plugin:list` commands to ensure the plugin is installed and working properly.
 
 #### Lider Console
