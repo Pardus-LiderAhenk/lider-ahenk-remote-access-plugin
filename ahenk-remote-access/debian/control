@@ -9,6 +9,6 @@ Homepage: http://www.liderahenk.org.tr
 Package: remote-access
 Version: 1.0.0
 Architecture: any
-Depends: python3 (>= 3)
+Depends: python3 (>= 3), x11vnc
 Description: LiderAhenk ahenk-remote-access application
  Long Desc
