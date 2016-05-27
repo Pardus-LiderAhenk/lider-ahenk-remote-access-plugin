@@ -1,8 +1,11 @@
 package tr.org.liderahenk.remote.access.dialogs;
 
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -17,10 +20,9 @@ import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tr.org.liderahenk.liderconsole.core.constants.LiderConstants;
 import tr.org.liderahenk.liderconsole.core.dialogs.DefaultTaskDialog;
-import tr.org.liderahenk.liderconsole.core.model.TaskStatus;
 import tr.org.liderahenk.liderconsole.core.widgets.Notifier;
+import tr.org.liderahenk.liderconsole.core.xmpp.notifications.TaskStatusNotification;
 import tr.org.liderahenk.remote.access.constants.RemoteAccessConstants;
 import tr.org.liderahenk.remote.access.i18n.Messages;
 import tr.org.liderahenk.remote.access.listeners.RemoteAccessConnection;
@@ -38,9 +40,7 @@ public class RemoteAccessTaskDialog extends DefaultTaskDialog {
 
 	public RemoteAccessTaskDialog(Shell parentShell, String dn) {
 		super(parentShell, dn);
-		// TODO improvement. (after XMPPClient fix) Instead of 'TASK' topic use
-		// plugin name as event topic
-		eventBroker.subscribe(LiderConstants.EVENT_TOPICS.TASK, eventHandler);
+		eventBroker.subscribe(getPluginName().toUpperCase(Locale.ENGLISH), eventHandler);
 	}
 
 	private EventHandler eventHandler = new EventHandler() {
@@ -49,14 +49,15 @@ public class RemoteAccessTaskDialog extends DefaultTaskDialog {
 			Job job = new Job("TASK") {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
-
 					monitor.beginTask("VNC", 100);
-
 					try {
-
 						String body = (String) event.getProperty("org.eclipse.e4.data");
-						TaskStatus taskStatus = new ObjectMapper().readValue(body, TaskStatus.class);
-						Map<String, Object> responseData = taskStatus.getResponseData();
+						TaskStatusNotification taskStatus = new ObjectMapper().readValue(body,
+								TaskStatusNotification.class);
+						byte[] data = taskStatus.getResult().getResponseData();
+						Map<String, Object> responseData = new ObjectMapper().readValue(data, 0, data.length,
+								new TypeReference<HashMap<String, Object>>() {
+						});
 
 						// Host may have contain multiple IP addresses
 						String[] ipAddresses = ((String) responseData.get("host")).split(",");
@@ -77,7 +78,6 @@ public class RemoteAccessTaskDialog extends DefaultTaskDialog {
 								}
 							}
 						}
-
 					} catch (Exception e) {
 						logger.error(e.getMessage(), e);
 						Notifier.error("", Messages.getString("UNEXPECTED_ERROR_CONNECTING_VNC"));
