@@ -51,9 +51,8 @@ public class RemoteAccessTaskDialog extends DefaultTaskDialog {
 				protected IStatus run(IProgressMonitor monitor) {
 					monitor.beginTask("VNC", 100);
 					try {
-						String body = (String) event.getProperty("org.eclipse.e4.data");
-						TaskStatusNotification taskStatus = new ObjectMapper().readValue(body,
-								TaskStatusNotification.class);
+						TaskStatusNotification taskStatus = (TaskStatusNotification) event
+								.getProperty("org.eclipse.e4.data");
 						byte[] data = taskStatus.getResult().getResponseData();
 						Map<String, Object> responseData = new ObjectMapper().readValue(data, 0, data.length,
 								new TypeReference<HashMap<String, Object>>() {
