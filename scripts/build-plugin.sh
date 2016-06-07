@@ -11,11 +11,28 @@ PRJ_ROOT_PATH=$(dirname $(pwd -P))
 popd > /dev/null
 echo "Project path: $PRJ_ROOT_PATH"
 
+# Generate third-party dependencies
+echo "Generating third-party dependencies..."
+cd "$PRJ_ROOT_PATH"/lider-console-remote-access-dependencies
+mvn clean p2:site
+echo "Generated third-party dependencies."
+
+# Start jetty server for Tycho to use generated dependencies
+echo "Starting server for Tycho..."
+mvn jetty:run &
+J_PID=$!
+echo "Started server."
+
 # Build project
 echo "Building lider & lider-console modules..."
 cd "$PRJ_ROOT_PATH"
 mvn clean install -DskipTests
 echo "lider & lider-console modules built successfully."
+
+# After exporting products, kill jetty server process
+echo "Shutting down server..."
+kill $J_PID
+echo "Server shut down."
 
 # Generate Ahenk package
 echo "Generating Ahenk package..."
