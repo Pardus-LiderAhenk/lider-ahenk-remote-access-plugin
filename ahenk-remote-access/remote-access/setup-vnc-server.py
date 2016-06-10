@@ -51,14 +51,19 @@ class SetupVnc(AbstractPlugin):
         self.logger.debug('[SetupVnc] Running VNC proceses were killed')
 
         self.logger.debug('[SetupVnc] Getting display and username.')
-        result_code, p_out, p_err = self.execute("who | awk '{print $1, $5}' | sed 's/(://' | sed 's/)//'", result=True)
 
-        lines = str(p_out).split('\n')
-        params = lines[0].split(' ')
+        arr = self.get_username_display()
+
+        if len(arr) < 1:
+            raise NameError('Display not found!')
+
+        params = str(arr[0]).split(' ')
+
+        self.logger.debug('[SetupVnc] Username:{0} Display:{1}'.format(params[0], params[1]))
 
         if self.is_exist('/tmp/.vncahenk{}'.format(params[0])) is False:
-            self.logger.debug('[SetupVnc] Creating temp conf file.')
-            self.create_directory('/tmp/.vncahenk{}'.format(params[0]))
+            self.logger.debug('[SetupVnc] Cleaning previous configurations.')
+            self.delete_folder('/tmp/.vncahenk{}'.format(params[0]))
 
         self.logger.debug('[SetupVnc] Creating user VNC conf file as user')
         self.execute('su - {0} -c "mkdir -p /tmp/.vncahenk{1}"'.format(params[0], params[0]), result=False)
@@ -67,7 +72,20 @@ class SetupVnc(AbstractPlugin):
         self.execute('su - {0} -c "x11vnc -storepasswd {1} /tmp/.vncahenk{2}/x11vncpasswd"'.format(params[0], self.password, params[0]), result=False)
 
         self.logger.debug('[SetupVnc] Running VNC server as user.')
-        self.execute('su - {0} -c "x11vnc -accept \'popup\' -rfbport {1} -rfbauth /tmp/.vncahenk{2}/x11vncpasswd -o /tmp/.vncahenk{3}/vnc.log -display :{4}"'.format(params[0],self.port, params[0], params[0], params[1]), result=False)
+        self.execute('su - {0} -c "x11vnc -accept \'popup\' -rfbport {1} -rfbauth /tmp/.vncahenk{2}/x11vncpasswd -o /tmp/.vncahenk{3}/vnc.log -display :{4}"'.format(params[0], self.port, params[0], params[0], params[1]), result=False)
+
+    def get_username_display(self):
+        result_code, p_out, p_err = self.execute("who | awk '{print $1, $5}' | sed 's/(://' | sed 's/)//'", result=True)
+
+        self.logger.debug('[SetupVnc] Getting display result code:{0}'.format(str(result_code)))
+
+        result = []
+        lines = str(p_out).split('\n')
+        for line in lines:
+            arr = line.split(' ')
+            if len(arr) > 1 and str(arr[1]).isnumeric() is True:
+                result.append(line)
+        return result
 
     def create_password(self, range):
         self.logger.debug('[SetupVnc] Password created')
