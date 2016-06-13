@@ -5,6 +5,7 @@
 #
 # Generated files can be found under /tmp/lider-ahenk-remote-access-plugin/
 ###
+set -e
 
 pushd $(dirname $0) > /dev/null
 PRJ_ROOT_PATH=$(dirname $(pwd -P))
