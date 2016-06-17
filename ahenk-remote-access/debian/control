@@ -3,11 +3,12 @@ Section: unknown
 Priority: optional
 Maintainer: TUBITAK ULAKBIM
 Build-Depends: debhelper (>= 9)
-Standards-Version: 3.9.5
+Standards-Version: 3.9.6
 Homepage: http://www.liderahenk.org.tr
 
-Package: remote-access
+Package: ahenk-remote-access
 Version: 1.0.0
 Architecture: any
 Depends: python3 (>= 3), x11vnc
-Description: LiderAhenk Remote Access provides controlling computers, which has running Ahenk, via VNC.
+Description: Lider Ahenk remote access (VNC) plugin
+
