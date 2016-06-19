@@ -1,39 +1,25 @@
 # lider-ahenk-remote-access-plugin
 
-**Lider Ahenk** is an open source project which provides solutions to manage, monitor and audit unlimited number of different systems and users on a network.
+Remote access plugin for [Lider Ahenk project](http://www.liderahenk.org.tr) which provides a VNC (Virtual Network Computing) client allowing users to connect to Ahenk-installed machines with desktop sharing capabilities.
 
-Lider Ahenk remote-access plugin provides a VNC (Virtual Network Computing) client which allow users to connect to Ahenk-installed machines with desktop sharing capabilities.
+|                   | **user-oriented** | **machine-oriented** |
+|:-----------------:|:-----------------:|:--------------------:|
+| **task plugin**   |                   |           x          |
+| **policy plugin** |                   |                      |
 
-This documentation **only** covers plugin related topics. To learn about core projects, please see other lider ahenk projects section.
-
-## Setup Development Environment
+## How to Build
 
 > We use Eclipse for Lider and Lider Console related development. See these documentation [here](https://github.com/Pardus-Kurumsal/lider-console/wiki/01.-Setup-Development-Environment) and [here](https://github.com/Pardus-Kurumsal/lider/wiki/01.-Setup-Development-Environment) to setup Eclipse IDE with Lider and Lider Console projects imported.
 
 1. Clone the plugin project by running `git clone https://github.com/Pardus-Kurumsal/lider-ahenk-remote-access-plugin.git`.
 2. Open Eclipse and import the plugin project into Eclipse as 'Existing Maven Projects'.
+3. Navigate to _lider-ahenk-remote-access-plugin/scripts_ directory and run `build-plugin.sh`.
 
-## How to Build?
+## How to Run
 
-#### Manual build
-
-1. Change directory to *lider-console-remote-access-dependencies/* and run `mvn clean p2:site` to (re)generate third party dependencies. This step will convert **non-OSGI** third party jar files to OSGI bundles.
-2. After dependency generation, run `mvn jetty:run` to start jetty server. This will allow Tycho to consume dependencies from the server (localhost) since Tycho can't use local repositories yet.
-3. Head back to project root directory and run `mvn clean install -DskipTests`.
-
-#### Easy build
-
-1. Instead of manually building, just run `build-plugin.sh` under the **scripts/** directory.
-
-> **Warning**: Make sure port 8080 is available before running the script since jetty uses this port by default.
-
-## How to Run?
-
-Plugin project consists of three sub-modules (for **Lider**, **Lider Console** and **Ahenk**). Each sub-module is its own plugin that needs to be handled separately. Below is an explanation regarding how to run each sub-module:
+> Make sure you have Lider, Lider Console and Ahenk running. See these documentation:  [\[1\]](https://github.com/Pardus-Kurumsal/lider/wiki/02.-Building-&-Running), [\[2\]](https://github.com/Pardus-Kurumsal/lider-console/wiki/02.-Building-&-Running) and [\[3\]](https://github.com/Pardus-Kurumsal/ahenk/wiki/02.-Running).
 
 #### Lider
-
-> **Prerequisite**: Make sure you have a running Karaf container on which Lider core components installed. See [this documentation](https://github.com/Pardus-Kurumsal/lider/wiki/02.-Building-&-Running) for how to run Lider on Karaf container.
 
 1. Type `feature:repo-add  mvn:tr.org.liderahenk/lider-remote-access-feature/1.0.0/xml/features` on Karaf shell. This will add plugin repository to the Karaf instance.
 2. Again on Karaf shell, run `feature:install lider-remote-access` to install and run plugin bundles.
@@ -41,15 +27,13 @@ Plugin project consists of three sub-modules (for **Lider**, **Lider Console** a
 
 #### Lider Console
 
-> **Prerequisite**: Make sure you have a running Lider Console application. See [this documentation](https://github.com/Pardus-Kurumsal/lider-console/wiki/02.-Building-&-Running) for how to run Lider Console on Eclipse.
-
 1. Open Eclipse, go to 'Run --> Debug Configurations' menu and on 'Plugins' tab, select _lider-console-remote-access_
 2. Click 'Add Required Plugins' button to add any plugins the project depend on.
 3. Finally you can run Lider Console as explained in its [documentation](https://github.com/Pardus-Kurumsal/lider-console/wiki/02.-Building-&-Running).
 
 #### Ahenk
 
-**TODO**
+1. Create a soft link for _ahenk-remote-access/remote-access_ directory via `sudo ln -s lider-ahenk-remote-access-plugin/ahenk-remote-access/remote-access/ /opt/ahenk/plugins`
 
 ## Contribution
 
