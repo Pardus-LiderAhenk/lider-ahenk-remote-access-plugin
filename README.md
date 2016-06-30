@@ -15,6 +15,8 @@ Remote access plugin for [Lider Ahenk project](http://www.liderahenk.org.tr) whi
 2. Open Eclipse and import the plugin project into Eclipse as 'Existing Maven Projects'.
 3. Navigate to _lider-ahenk-remote-access-plugin/scripts_ directory and run `build-plugin.sh`.
 
+You should add eclipse tightvncviewer plugin. After build plugin, you should install new eclipse software from local. In eclipse patform "Help" > "Install New Softeware" > "Add" Select Local "<git folder>/lider-ahenk-remote-access-plugin/lider-console-remote-access-dependencies/target/repository" select tightvncviewer and install. Restart eclipse.
+
 ## How to Run
 
 > Make sure you have Lider, Lider Console and Ahenk running. See these documentation:  [\[1\]](https://github.com/Pardus-Kurumsal/lider/wiki/02.-Building-&-Running), [\[2\]](https://github.com/Pardus-Kurumsal/lider-console/wiki/02.-Building-&-Running) and [\[3\]](https://github.com/Pardus-Kurumsal/ahenk/wiki/02.-Running).
