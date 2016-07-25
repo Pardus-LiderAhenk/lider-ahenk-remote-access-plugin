@@ -17,7 +17,7 @@ public class RemoteAccessTaskHandler extends SingleSelectionHandler {
 	public void executeWithDn(String dn) {
 		RemoteAccessTaskDialog dialog = new RemoteAccessTaskDialog(Display.getDefault().getActiveShell(), dn);
 		dialog.create();
-		dialog.open();
+		dialog.openWithEventBroker();
 	}
 
 }

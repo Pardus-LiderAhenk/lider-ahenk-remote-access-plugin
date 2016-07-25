@@ -1,7 +1,6 @@
 package tr.org.liderahenk.remote.access.dialogs;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -10,11 +9,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
@@ -37,14 +34,47 @@ public class RemoteAccessTaskDialog extends DefaultTaskDialog {
 
 	private static final Logger logger = LoggerFactory.getLogger(RemoteAccessTaskDialog.class);
 
-	private IEventBroker eventBroker = (IEventBroker) PlatformUI.getWorkbench().getService(IEventBroker.class);
-
 	public RemoteAccessTaskDialog(Shell parentShell, String dn) {
 		super(parentShell, dn);
-		eventBroker.subscribe(getPluginName().toUpperCase(Locale.ENGLISH), eventHandler);
+		subscribeEventHandler(taskStatusNotificationHandler);
 	}
 
-	private EventHandler eventHandler = new EventHandler() {
+	@Override
+	public String createTitle() {
+		return Messages.getString("ESTABLISH_REMOTE_ACCESS");
+	}
+
+	@Override
+	public Control createTaskDialogArea(Composite parent) {
+		return null;
+	}
+
+	@Override
+	public void validateBeforeExecution() throws ValidationException {
+
+	}
+
+	@Override
+	public Map<String, Object> getParameterMap() {
+		return null;
+	}
+
+	@Override
+	public String getCommandId() {
+		return "SETUP-VNC-SERVER";
+	}
+
+	@Override
+	public String getPluginName() {
+		return RemoteAccessConstants.PLUGIN_NAME;
+	}
+
+	@Override
+	public String getPluginVersion() {
+		return RemoteAccessConstants.PLUGIN_VERSION;
+	}
+
+	private EventHandler taskStatusNotificationHandler = new EventHandler() {
 		@Override
 		public void handleEvent(final Event event) {
 			Job job = new Job("TASK") {
@@ -57,7 +87,7 @@ public class RemoteAccessTaskDialog extends DefaultTaskDialog {
 						byte[] data = taskStatus.getResult().getResponseData();
 						Map<String, Object> responseData = new ObjectMapper().readValue(data, 0, data.length,
 								new TypeReference<HashMap<String, Object>>() {
-						});
+								});
 
 						// Host may have contain multiple IP addresses
 						String[] ipAddresses = ((String) responseData.get("host")).split(",");
@@ -94,47 +124,5 @@ public class RemoteAccessTaskDialog extends DefaultTaskDialog {
 			job.schedule();
 		}
 	};
-
-	@Override
-	public boolean close() {
-		eventBroker.unsubscribe(eventHandler);
-		return super.close();
-	}
-
-	@Override
-	public String createTitle() {
-		return Messages.getString("ESTABLISH_REMOTE_ACCESS");
-	}
-
-	@Override
-	public Control createTaskDialogArea(Composite parent) {
-		return null;
-	}
-
-
-	@Override
-	public void validateBeforeExecution() throws ValidationException {
-		
-	}
-
-	@Override
-	public Map<String, Object> getParameterMap() {
-		return null;
-	}
-
-	@Override
-	public String getCommandId() {
-		return "SETUP-VNC-SERVER";
-	}
-
-	@Override
-	public String getPluginName() {
-		return RemoteAccessConstants.PLUGIN_NAME;
-	}
-
-	@Override
-	public String getPluginVersion() {
-		return RemoteAccessConstants.PLUGIN_VERSION;
-	}
 
 }
