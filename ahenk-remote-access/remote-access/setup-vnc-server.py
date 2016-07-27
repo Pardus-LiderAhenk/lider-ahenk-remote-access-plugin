@@ -31,10 +31,10 @@ class SetupVnc(AbstractPlugin):
             ip_addresses = str(self.Hardware.Network.ip_addresses()).replace('[', '').replace(']', '').replace("'", '')
             data = {'port': self.port, 'password': self.password, 'host': ip_addresses}
             self.logger.debug('[SetupVnc] Response data created')
-            self.context.create_response(code=MessageCode.TASK_PROCESSED.value, message='VNC Configured successfully!\nPlease wait for permission of remote machine user...', data=data, content_type=ContentType.APPLICATION_JSON.value)
+            self.context.create_response(code=MessageCode.TASK_PROCESSED.value, message='VNC konfigürasyonu başarılı bir şekilde yapıldı!\nUzak makine kullanıcısının izni için lütfen bekleyiniz...', data=data, content_type=ContentType.APPLICATION_JSON.value)
         except Exception as e:
             self.logger.error('A problem occurred while running VNC server. Error Message: {}'.format(str(e)))
-            self.context.create_response(code=MessageCode.TASK_ERROR.value, message='A problem occurred while running VNC server')
+            self.context.create_response(code=MessageCode.TASK_ERROR.value, message='VNC sunucusu çalışırken bir hata oluştu.')
 
     def run_vnc_server(self):
 
