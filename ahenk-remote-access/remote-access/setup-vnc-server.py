@@ -5,6 +5,7 @@
 
 from base64 import b64encode
 from os import urandom
+import json
 
 from base.model.enum.ContentType import ContentType
 from base.model.enum.MessageCode import MessageCode
@@ -29,9 +30,14 @@ class SetupVnc(AbstractPlugin):
             self.run_vnc_server()
             self.logger.info('[SetupVnc] VNC Server running')
             ip_addresses = str(self.Hardware.Network.ip_addresses()).replace('[', '').replace(']', '').replace("'", '')
-            data = {'port': self.port, 'password': self.password, 'host': ip_addresses}
+
+            data = {}
+            data['port'] = self.port
+            data['password'] = self.password
+            data['host'] = ip_addresses
+
             self.logger.debug('[SetupVnc] Response data created')
-            self.context.create_response(code=MessageCode.TASK_PROCESSED.value, message='VNC konfigürasyonu başarılı bir şekilde yapıldı!\nUzak makine kullanıcısının izni için lütfen bekleyiniz...', data=data, content_type=ContentType.APPLICATION_JSON.value)
+            self.context.create_response(code=MessageCode.TASK_PROCESSED.value, message='VNC konfigürasyonu başarılı bir şekilde yapıldı!\nUzak makine kullanıcısının izni için lütfen bekleyiniz...', data=json.dumps(data), content_type=ContentType.APPLICATION_JSON.value)
         except Exception as e:
             self.logger.error('A problem occurred while running VNC server. Error Message: {}'.format(str(e)))
             self.context.create_response(code=MessageCode.TASK_ERROR.value, message='VNC sunucusu çalışırken bir hata oluştu.')
