@@ -38,7 +38,7 @@ echo "Server shut down."
 # Generate Ahenk package
 echo "Generating Ahenk package..."
 cd "$PRJ_ROOT_PATH"/ahenk-remote-access
-dpkg-buildpackage -b
+dpkg-buildpackage -b -uc
 echo "Generated Ahenk package"
 
 EXPORT_PATH=/tmp/lider-ahenk-remote-access-plugin
