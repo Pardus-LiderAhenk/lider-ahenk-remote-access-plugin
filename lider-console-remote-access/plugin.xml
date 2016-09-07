@@ -59,4 +59,11 @@
       </menuContribution>
   </extension>
   
+	<!-- Add extension point contribution for i18n messages -->
+	<extension
+  		point="tr.org.liderahenk.liderconsole.core.i18n">
+  		<task code="SETUP-VNC-SERVER" label="%command.task" />
+		<plugin name="remote-access" label="%plugin.label" />
+  	</extension>
+  
 </plugin>
