@@ -27,7 +27,8 @@ echo "Started server."
 # Build project
 echo "Building lider & lider-console modules..."
 cd "$PRJ_ROOT_PATH"
-mvn clean install -DskipTests
+#mvn clean install -DskipTests
+mvn clean install -DskipTests -DforceContextQualifier=beta
 echo "lider & lider-console modules built successfully."
 
 # After exporting products, kill jetty server process
