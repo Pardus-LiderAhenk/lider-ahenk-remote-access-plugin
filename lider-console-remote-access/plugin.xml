@@ -65,5 +65,12 @@
   		<task code="SETUP-VNC-SERVER" label="%command.task" />
 		<plugin name="remote-access" label="%plugin.label" />
   	</extension>
+  	
+  	
+  	  
+     <extension
+  		point="tr.org.liderahenk.liderconsole.core.taskmenu">
+  		<taskItem label="%command.task" pluginName="remote-access" pluginVersion="1.0.0" taskCommandId="tr.org.liderahenk.liderconsole.commands.RemoteAccessTask" />
+  	</extension>
   
 </plugin>
