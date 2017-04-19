@@ -70,7 +70,8 @@
   	  
      <extension
   		point="tr.org.liderahenk.liderconsole.core.taskmenu">
-  		<taskItem label="%command.task" pluginName="remote-access" pluginVersion="1.0.0" taskCommandId="tr.org.liderahenk.liderconsole.commands.RemoteAccessTask" />
+  		<taskItem label="%command.task" pluginName="remote-access" pluginVersion="1.0.0" taskCommandId="tr.org.liderahenk.liderconsole.commands.RemoteAccessTask" description="VNC yapısını kullanarak herhangi bir ağ sunucusu üzerinde çalışan grafik arayüz uygulamalarına başka bir bilgisayardan kolaylıkla ve hızla erişerek bu uygulamaların kullanılabilmesini ve yönetilebilmesini sağlar.
+  		&#xA;Uzaktan erişim sağlamak için tıklayınız.." />
   	</extension>
   
 </plugin>
