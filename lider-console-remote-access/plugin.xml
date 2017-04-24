@@ -66,12 +66,15 @@
 		<plugin name="remote-access" label="%plugin.label" />
   	</extension>
   	
-  	
+  	<!-- Add extension point contribution for "task execution" dialogs -->
   	  
      <extension
   		point="tr.org.liderahenk.liderconsole.core.taskmenu">
-  		<taskItem label="%command.task" pluginName="remote-access" pluginVersion="1.0.0" taskCommandId="tr.org.liderahenk.liderconsole.commands.RemoteAccessTask" description="VNC yapısını kullanarak herhangi bir ağ sunucusu üzerinde çalışan grafik arayüz uygulamalarına başka bir bilgisayardan kolaylıkla ve hızla erişerek bu uygulamaların kullanılabilmesini ve yönetilebilmesini sağlar.
-  		&#xA;Uzaktan erişim sağlamak için tıklayınız.." />
+  		<taskItem label="%command.task" pluginName="remote-access" 
+  		pluginVersion="1.0.0" taskCommandId="tr.org.liderahenk.liderconsole.commands.RemoteAccessTask" 
+  		description="VNC yapısını kullanarak herhangi bir ağ sunucusu üzerinde çalışan grafik arayüz uygulamalarına başka bir bilgisayardan kolaylıkla ve hızla erişerek bu uygulamaların kullanılabilmesini ve yönetilebilmesini sağlar.
+  		&#xA;Uzaktan erişim sağlamak için tıklayınız.." 
+  		imagePath="remote-access.png"/>
   	</extension>
   
 </plugin>
