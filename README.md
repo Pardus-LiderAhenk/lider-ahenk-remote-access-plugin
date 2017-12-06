@@ -35,7 +35,7 @@ You should add eclipse tightvncviewer plugin. After build plugin, you should ins
 
 #### Ahenk
 
-1. Create a soft link for _ahenk-remote-access/remote-access_ directory via `sudo ln -s lider-ahenk-remote-access-plugin/ahenk-remote-access/remote-access/ /opt/ahenk/plugins`
+1. Create a soft link for _ahenk-remote-access/remote-access_ directory via `sudo ln -s lider-ahenk-remote-access-plugin/ahenk-remote-access/remote-access/ /usr/share/ahenk/plugins`
 
 ## Contribution
 
