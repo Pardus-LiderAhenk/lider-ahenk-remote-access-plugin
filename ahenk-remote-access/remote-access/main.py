@@ -7,7 +7,7 @@
 def info():
     inf = dict()
     inf['name'] = 'remote-access'
-    inf['version'] = '1.0.0'
+    inf['version'] = '1.1'
     inf['support'] = 'debian'
     inf[
         'description'] = 'Remote Access provides controlling remote Ahenk machine simultaneously. It uses VNC technology.'
