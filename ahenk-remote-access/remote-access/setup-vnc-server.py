@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# Author:Mine DOGAN <mine.dogan@agem.com.tr>
-# Author: Volkan Şahin <volkansah.in> <bm.volkansahin@gmail.com>
+# Author: Tuncay ÇOLAK <tuncay.colak@tubitak.gov.tr>
 
+import threading
 from base64 import b64encode
 from os import urandom
 import json
@@ -13,14 +13,16 @@ from base.plugin.abstract_plugin import AbstractPlugin
 class SetupVnc(AbstractPlugin):
     """docstring for SetupVnc"""
 
-    def __init__(self, task, context):
+    def __init__(self, data, context):
         super(AbstractPlugin, self).__init__()
-        self.task = task
+        self.data = data
         self.context = context
         self.logger = self.get_logger()
         self.password = self.create_password(10)
         self.port = self.get_port_number()
         self.logger.debug('Parameters were initialized')
+        self.xmessage_command = "su {0} -c 'export DISPLAY={1} && export XAUTHORITY=~{2}/.Xauthority && xmessage -buttons Tamam -center -timeout 5 -title \"Lider Ahenk Bilgilendirme\" \"{3}\" ' "
+
 
     def handle_task(self):
         self.logger.debug('Handling task')
@@ -29,15 +31,21 @@ class SetupVnc(AbstractPlugin):
             self.logger.info('VNC Server running')
             ip_addresses = str(self.Hardware.Network.ip_addresses()).replace('[', '').replace(']', '').replace("'", '')
 
-            data = {}
-            data['port'] = self.port
-            data['password'] = self.password
-            data['host'] = ip_addresses
-
+            self.data['port'] = self.port
+            self.data['password'] = self.password
+            self.data['host'] = ip_addresses
             self.logger.debug('Response data created')
+
+            if self.data['permission'] == "yes":
+                message = "VNC başarılı bir şekilde yapılandırıldı!\n{0} ip'li bilgisayara uzak erişim sağlanacaktır.\nKullanıcısının izni için lütfen bekleyiniz...'".format(self.data['host'])
+            elif self.data['permission'] == "no":
+                message = "VNC başarılı bir şekilde yapılandırıldı!\n{0} ip'li bilgisayara kullanıcı izni gerektirmeksizin uzak erişim sağlanmıştır...'".format(self.data['host'])
+            else:
+                message = "VNC başarılı bir şekilde yapılandırıldı!\n{0} ip'li bilgisayara kullanıcı izni ve bildirim gerektirmeksizin uzak erişim sağlanmıştır...'".format(self.data['host'])
+
             self.context.create_response(code=self.get_message_code().TASK_PROCESSED.value,
-                                         message='VNC başarılı bir şekilde yapılandırıldı!\nUzak makine kullanıcısının izni için lütfen bekleyiniz...',
-                                         data=json.dumps(data),
+                                         message=message,
+                                         data=json.dumps(self.data),
                                          content_type=self.get_content_type().APPLICATION_JSON.value)
         except Exception as e:
             self.logger.error('A problem occurred while running VNC server. Error Message: {}'.format(str(e)))
@@ -46,46 +54,68 @@ class SetupVnc(AbstractPlugin):
 
     def run_vnc_server(self):
 
-        self.logger.debug('Is VNC server installed?')
+        users = self.Sessions.user_name()
+        self.logger.debug('[XMessage] users : ' + str(users))
 
-        if self.is_installed('x11vnc') is False:
-            self.logger.debug('VNC server not found, it is installing')
-            self.install_with_apt_get('x11vnc')
+        for user in users:
+            user_display = self.Sessions.display(user)
 
-        self.logger.debug('VNC server was installed')
+            self.logger.debug('Is VNC server installed?')
 
-        self.logger.debug('Killing running VNC proceses')
-        self.execute("ps aux | grep x11vnc | grep 'port " + self.port + "' | awk '{print $2}' | xargs kill -9",
-                     result=False)
-        self.logger.debug('Running VNC proceses were killed')
+            if self.is_installed('x11vnc') is False:
+                self.logger.debug('VNC server not found, it is installing')
+                self.install_with_apt_get('x11vnc')
 
-        self.logger.debug('Getting display and username...')
+            self.logger.debug('VNC server was installed')
+            self.logger.debug('Killing running VNC proceses')
+            self.execute("ps aux | grep x11vnc | grep 'port " + self.port + "' | awk '{print $2}' | xargs kill -9",
+                         result=False)
+            self.logger.debug('Running VNC proceses were killed')
+            self.logger.debug('Getting display and username...')
 
-        arr = self.get_username_display()
+            arr = self.get_username_display()
 
-        if len(arr) < 1:
-            raise NameError('Display not found!')
+            if len(arr) < 1:
+                raise NameError('Display not found!')
 
-        params = str(arr[0]).split(' ')
+            params = str(arr[0]).split(' ')
 
-        self.logger.debug('Username:{0} Display:{1}'.format(params[0], params[1]))
+            self.logger.debug('Username:{0} Display:{1}'.format(params[0], params[1]))
 
-        if self.is_exist('/tmp/vncahenk{0}'.format(params[0])) is True:
-            self.logger.debug('Cleaning previous configurations.')
-            self.delete_folder('/tmp/vncahenk{0}'.format(params[0]))
+            if self.is_exist('/home/{0}/.vncahenk{0}'.format(params[0])) is True:
+                self.logger.debug('Cleaning previous configurations.')
+                # self.delete_folder('/vhome/{0}/.vncahenk{0}'.format(params[0]))
 
-        self.logger.debug('Creating user VNC conf file as user')
-        self.execute('su - {0} -c "mkdir -p /tmp/vncahenk{1}"'.format(params[0], params[0]), result=False)
+            self.logger.debug('Creating user VNC conf file as user')
+            self.execute('su - {0} -c "mkdir -p /home/{0}/.vncahenk{1}"'.format(params[0], params[0]), result=False)
 
-        self.logger.debug('Creating password as user')
-        self.execute(
-            'su - {0} -c "x11vnc -storepasswd {1} /tmp/vncahenk{2}/x11vncpasswd"'.format(params[0], self.password,
-                                                                                         params[0]), result=False)
+            self.logger.debug('Creating password as user')
+            self.execute('su - {0} -c "x11vnc -storepasswd {1} /home/{0}/.vncahenk{2}/x11vncpasswd"'.format(params[0], self.password, params[0]), result=False)
 
-        self.logger.debug('Running VNC server as user.')
-        self.execute(
-            'su - {0} -c "x11vnc -accept \'popup\' -rfbport {1} -rfbauth /tmp/vncahenk{2}/x11vncpasswd -o /tmp/vncahenk{3}/vnc.log -display :{4}"'.format(
-                params[0], self.port, params[0], params[0], params[1]), result=False)
+            self.logger.debug('Running VNC server as user.')
+
+            if self.data['permission'] == "yes":
+
+                self.execute('su - {0} -c "x11vnc -accept \'popup\' -gone \'popup\' -rfbport {1} -rfbauth /home/{0}/.vncahenk{2}/x11vncpasswd -o /home/{0}/.vncahenk{3}/vnc.log -display :{4}"'.format(
+                        params[0], self.port, params[0], params[0], params[1]), result=False)
+            elif self.data["permission"] == "no":
+
+                self.logger.info("--->>> xmessage command..."+str(self.xmessage_command))
+                message = "Lider Ahenk Sistem Yoneticisi tarafindan\n" \
+                          "5 sn sonra bilgisayariniza uzak erisim saglanacaktir."
+                self.logger.info("Lider Ahenk sistem yöneticisi 5 sn sonra bilgisayarınıza uzak erişim sağlayacaktır.")
+
+                t = threading.Thread(
+                    target=self.execute(self.xmessage_command.format(user, user_display, user, message)))
+                t.start()
+                self.execute('su - {0} -c "x11vnc -gone \'popup\' -rfbport {1} -rfbauth /home/{0}/.vncahenk{2}/x11vncpasswd -o /home/{0}/.vncahenk{3}/vnc.log -display :{4}"'.format(
+                        params[0], self.port, params[0], params[0], params[1]), result=False)
+
+            else:
+                self.execute(
+                    'su - {0} -c "x11vnc -rfbport {1} -rfbauth /home/{0}/.vncahenk{2}/x11vncpasswd -o /home/{0}/.vncahenk{3}/vnc.log -display :{4}"'.format(
+                        params[0], self.port, params[0], params[0], params[1]), result=False)
+                self.logger.info("Lider Ahenk sistem yöneticisi tarafından kullanıcı izni ve bildirim gerektirmeksizin uzak erişim sağlanmıştır")
 
     def get_username_display(self):
         result_code, p_out, p_err = self.execute("who | awk '{print $1, $5}' | sed 's/(://' | sed 's/)//'", result=True)

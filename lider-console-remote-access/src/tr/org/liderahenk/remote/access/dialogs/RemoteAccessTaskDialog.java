@@ -9,8 +9,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -28,9 +33,11 @@ import tr.org.liderahenk.remote.access.listeners.RemoteAccessConnection;
 /**
  * 
  * @author <a href="mailto:emre.akkaya@agem.com.tr">Emre Akkaya</a>
- *
+ * @author <a href="mailto:tuncay.colak@tubitak.gov.tr">Tuncay ÇOLAK</a>
  */
 public class RemoteAccessTaskDialog extends DefaultTaskDialog {
+	
+	private Combo cmbPerClick;
 
 	private static final Logger logger = LoggerFactory.getLogger(RemoteAccessTaskDialog.class);
 
@@ -46,9 +53,26 @@ public class RemoteAccessTaskDialog extends DefaultTaskDialog {
 
 	@Override
 	public Control createTaskDialogArea(Composite parent) {
-		return null;
+		Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayout(new GridLayout(2, false));
+
+		GridData gData = new GridData(SWT.FILL, SWT.FILL, false, false);
+		gData.widthHint = SWT.DEFAULT;
+		gData.heightHint = 50;
+		composite.setLayoutData(gData);
+		
+		Label lblUserPermission = new Label(composite, SWT.NONE);
+		
+		lblUserPermission.setText(Messages.getString("USER_PERMISSION"));
+		cmbPerClick = new Combo(composite, SWT.BORDER | SWT.DROP_DOWN | SWT.READ_ONLY);
+		cmbPerClick.setSize(10, 10 );
+		String items [] = {Messages.getString("YES"), Messages.getString("NO"), Messages.getString("CONNECT_WITHOUT_NOTIFY")};
+		cmbPerClick.setItems(items);
+		cmbPerClick.select(0);
+		return composite;
 	}
 
+		
 	@Override
 	public void validateBeforeExecution() throws ValidationException {
 
@@ -56,7 +80,21 @@ public class RemoteAccessTaskDialog extends DefaultTaskDialog {
 
 	@Override
 	public Map<String, Object> getParameterMap() {
-		return null;
+		Map<String, Object> params= new HashMap<>();
+		
+//		params.put("file-content", textMessage.getText());
+		if (cmbPerClick.getSelectionIndex() == 0) {
+			
+			params.put(RemoteAccessConstants.PARAMETERS.USER_PERMISSION, "yes");
+		}
+		else if (cmbPerClick.getSelectionIndex() == 1) {
+			params.put(RemoteAccessConstants.PARAMETERS.USER_PERMISSION, "no");
+		} 
+		else {
+			params.put(RemoteAccessConstants.PARAMETERS.USER_PERMISSION, "without_notify");
+		}
+		return params;
+			
 	}
 
 	@Override
