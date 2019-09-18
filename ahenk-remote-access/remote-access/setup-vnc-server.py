@@ -1,11 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # Author: Tuncay ÇOLAK <tuncay.colak@tubitak.gov.tr>
-
-import threading
+import json
+import time
 from base64 import b64encode
 from os import urandom
-import json
 
 from base.plugin.abstract_plugin import AbstractPlugin
 
@@ -21,7 +20,6 @@ class SetupVnc(AbstractPlugin):
         self.password = self.create_password(10)
         self.port = self.get_port_number()
         self.logger.debug('Parameters were initialized')
-        self.xmessage_command = "su {0} -c 'export DISPLAY={1} && export XAUTHORITY=~{2}/.Xauthority && xmessage -buttons Tamam -center -timeout 5 -title \"Lider Ahenk Bilgilendirme\" \"{3}\" ' "
 
 
     def handle_task(self):
@@ -47,6 +45,7 @@ class SetupVnc(AbstractPlugin):
                                          message=message,
                                          data=json.dumps(self.data),
                                          content_type=self.get_content_type().APPLICATION_JSON.value)
+
         except Exception as e:
             self.logger.error('A problem occurred while running VNC server. Error Message: {}'.format(str(e)))
             self.context.create_response(code=self.get_message_code().TASK_ERROR.value,
@@ -80,11 +79,13 @@ class SetupVnc(AbstractPlugin):
 
             params = str(arr[0]).split(' ')
 
+            self.logger.info("--------->>>> "+str(params))
+
             self.logger.debug('Username:{0} Display:{1}'.format(params[0], params[1]))
 
             if self.is_exist('/home/{0}/.vncahenk{0}'.format(params[0])) is True:
                 self.logger.debug('Cleaning previous configurations.')
-                # self.delete_folder('/vhome/{0}/.vncahenk{0}'.format(params[0]))
+                # self.delete_folder('/home/{0}/.vncahenk{0}'.format(params[0]))
 
             self.logger.debug('Creating user VNC conf file as user')
             self.execute('su - {0} -c "mkdir -p /home/{0}/.vncahenk{1}"'.format(params[0], params[0]), result=False)
@@ -95,19 +96,18 @@ class SetupVnc(AbstractPlugin):
             self.logger.debug('Running VNC server as user.')
 
             if self.data['permission'] == "yes":
+                self.send_notify("Liderahenk", "Lider Ahenk Sistem Yoneticisi tarafindan\n5 sn sonra bilgisayarınıza uzak erişim sağlanacaktır.\nBağlantı kapatıldıktan sonra ayrıca bilgilendirilecektir.",":0", params[0], timeout=50000)
+                time.sleep(5)
 
                 self.execute('su - {0} -c "x11vnc -accept \'popup\' -gone \'popup\' -rfbport {1} -rfbauth /home/{0}/.vncahenk{2}/x11vncpasswd -o /home/{0}/.vncahenk{3}/vnc.log -display :{4}"'.format(
                         params[0], self.port, params[0], params[0], params[1]), result=False)
             elif self.data["permission"] == "no":
 
-                self.logger.info("--->>> xmessage command..."+str(self.xmessage_command))
-                message = "Lider Ahenk Sistem Yoneticisi tarafindan\n" \
-                          "5 sn sonra bilgisayariniza uzak erisim saglanacaktir."
-                self.logger.info("Lider Ahenk sistem yöneticisi 5 sn sonra bilgisayarınıza uzak erişim sağlayacaktır.")
+                self.logger.info("Lider Ahenk sistem yöneticisi 5 sn sonra bilgisayarınıza uzak erişim sağlayacaktır. ")
 
-                t = threading.Thread(
-                    target=self.execute(self.xmessage_command.format(user, user_display, user, message)))
-                t.start()
+                self.send_notify("Liderahenk", "Lider Ahenk Sistem Yoneticisi tarafindan\n5 sn sonra bilgisayarınıza uzak erişim sağlanacaktır.\nBağlantı kapatıldıktan sonra ayrıca bilgilendirilecektir.", ":0", params[0], timeout=50000)
+                time.sleep(5)
+
                 self.execute('su - {0} -c "x11vnc -gone \'popup\' -rfbport {1} -rfbauth /home/{0}/.vncahenk{2}/x11vncpasswd -o /home/{0}/.vncahenk{3}/vnc.log -display :{4}"'.format(
                         params[0], self.port, params[0], params[0], params[1]), result=False)
 
@@ -140,6 +140,8 @@ class SetupVnc(AbstractPlugin):
         return '5999'
 
 
+
 def handle_task(task, context):
     vnc = SetupVnc(task, context)
     vnc.handle_task()
+
